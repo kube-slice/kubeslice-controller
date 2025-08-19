@@ -6,18 +6,18 @@ import (
 	"fmt"
 	controllerv1alpha1 "github.com/kubeslice/kubeslice-controller/apis/controller/v1alpha1"
 	restclient "k8s.io/client-go/rest"
-	"k8s.io/klog/v2"
 	"open-cluster-management.io/addon-framework/pkg/addonfactory"
 	"open-cluster-management.io/addon-framework/pkg/addonmanager"
 )
 
+//go:embed all:manifests
 var FS embed.FS
 
 const (
 	AddonName = "kubeslice-addon"
 )
 
-func runManagerController() error {
+func RunManagerController() error {
 	kubeConfig, err := restclient.InClusterConfig()
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func runManagerController() error {
 		return err
 	}
 
-	agent, err := addonfactory.NewAgentAddonFactory(AddonName, FS, "manifests").
+	agent, err := addonfactory.NewAgentAddonFactory(AddonName, FS, "manifests/kubeslice-worker").
 		WithConfigGVRs(controllerv1alpha1.GroupVersion.WithResource(controllerv1alpha1.ResourceClusterConfigs)).
 		WithGetValuesFuncs(getValues(kubeConfig)).
 		BuildHelmAgentAddon()
@@ -40,14 +40,10 @@ func runManagerController() error {
 		fmt.Errorf("Unable to add agent to addon manager: %v", err)
 		return err
 	}
-	ctx := context.Background()
 	go func() {
-		err := addonMgr.Start(ctx)
-		if err != nil {
-			klog.Fatal(err)
+		if err := addonMgr.Start(context.Background()); err != nil {
+			fmt.Printf("OCM manager exited with error: %v\n", err)
 		}
 	}()
-
-	<-ctx.Done()
 	return nil
 }
