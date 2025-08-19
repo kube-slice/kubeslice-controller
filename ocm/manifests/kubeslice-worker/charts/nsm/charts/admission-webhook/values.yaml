@@ -1,0 +1,40 @@
+---
+# Default values for admission-webhook.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  nsmw_docker_existingImagePullSecret: "kubeslice-image-pull-secret"
+  # IF You dont have existing secret then pass all below values it will create new secret "avesha-docker-ips"
+  ## MANDOTORY FIELDS IF EXISTING SECRET NOT PRESENT ##
+  nsmw_docker_imagePullSecrets:
+    repository:
+    username: ''
+    password: ''
+    email: ''
+  imageRegistry: ghcr.io/kube-slice
+
+webhookImageRegistry: cmd-admission-webhook-k8s
+webhookImageTag: v1.7.3
+
+nsmInjectContainerImageRegistry: cmd-nsc
+nsmInjectContainerImageTag: v1.5.12
+
+nsmInjectInitContainerImageRegistry: cmd-nsc-init
+nsmInjectInitContainerImageTag: v1.5.8
+nsmInitContainerUpdateDNSConfig: true
+
+# nsm admission webhook ns
+nsmNs: kubeslice-nsm-webhook-system
+
+apiserver:
+    # If true, generates on install/upgrade the certs that allow the kube-apiserver (and potentially ServiceMonitor)
+  # to authenticate operators pods. Otherwise specify certs in apiserver.servingCerts.{caCrt, serverCrt, serverKey}.
+  # See also: [example terraform](https://github.com/kubeops/installer/blob/master/charts/identity-server/example-terraform.tf)
+  generate: true
+  # CA certficate used by serving certificate of webhook server.
+  caCrt: ""
+  # Serving certficate used by webhook server.
+  serverCrt: ""
+  # Private key for the serving certificate used by webhook server.
+  serverKey: ""

@@ -66,7 +66,12 @@ func init() {
 func main() {
 	// Compile time dependency injection
 	if os.Getenv("OCM_ENABLED") == "true" {
-		err := ocm.runManagerController()
+		go func() {
+			if err := ocm.RunManagerController(); err != nil {
+				setupLog.Error(err, "unable to start OCM manager")
+				os.Exit(1)
+			}
+		}()
 	}
 	mr := service.WithMetricsRecorder()
 	ns := service.WithNameSpaceService(mr)
