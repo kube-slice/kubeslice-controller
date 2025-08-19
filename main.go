@@ -42,6 +42,7 @@ import (
 	"github.com/kubeslice/kubeslice-controller/controllers/controller"
 	"github.com/kubeslice/kubeslice-controller/controllers/worker"
 	"github.com/kubeslice/kubeslice-controller/metrics"
+	"github.com/kubeslice/kubeslice-controller/ocm"
 	"github.com/kubeslice/kubeslice-controller/service"
 	"github.com/kubeslice/kubeslice-controller/util"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -64,6 +65,9 @@ func init() {
 
 func main() {
 	// Compile time dependency injection
+	if os.Getenv("OCM_ENABLED") == "true" {
+		err := ocm.runManagerController()
+	}
 	mr := service.WithMetricsRecorder()
 	ns := service.WithNameSpaceService(mr)
 	rp := service.WithAccessControlRuleProvider()
