@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	controllerv1alpha1 "github.com/kubeslice/kubeslice-controller/apis/controller/v1alpha1"
+	"gomodules.xyz/cert/certstore"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -40,7 +41,7 @@ func getKubesliceSecert(kubeConfig *rest.Config, ref v1alpha1.ConfigReference) (
 	return secret, nil
 }
 
-func getValues(restConfig *rest.Config) addonfactory.GetValuesFunc {
+func getValues(restConfig *rest.Config, cs *certstore.CertStore) addonfactory.GetValuesFunc {
 	return func(cluster *clusterv1.ManagedCluster, addon *v1alpha1.ManagedClusterAddOn) (addonfactory.Values, error) {
 		overrideValues := make(addonfactory.Values)
 
@@ -96,14 +97,27 @@ func getValues(restConfig *rest.Config) addonfactory.GetValuesFunc {
 			}
 
 			specMap, found, err := unstructured.NestedMap(fetchedCR.Object, "spec")
-
-			kubesliceSecret, err := getKubesliceSecert(restConfig, ref)
-
-			fmt.Println("endpoint: ", string(kubesliceSecret.Data["controllerEndpoint"]))
-
 			if err != nil {
 				return nil, err
 			}
+
+			kubesliceSecret, err := getKubesliceSecert(restConfig, ref)
+			if err != nil {
+				return nil, err
+			}
+
+			fmt.Println("endpoint: ", string(kubesliceSecret.Data["controllerEndpoint"]))
+
+			caCrtBytes, _, err := cs.ReadBytes(CACertName)
+			if err != nil {
+				return nil, err
+			}
+
+			crtBytes, keyBytes, err := cs.ReadBytes(ServerCertName)
+			if err != nil {
+				return nil, err
+			}
+
 			if found {
 				// Map to Helm chart values format
 				values := map[string]interface{}{
@@ -118,6 +132,25 @@ func getValues(restConfig *rest.Config) addonfactory.GetValuesFunc {
 					},
 					"netop": map[string]interface{}{
 						"networkInterface": specMap["networkInterface"],
+					},
+					"nsm": map[string]interface{}{
+						"admission-webhook": map[string]interface{}{
+							"apiserver": map[string]interface{}{
+								"servingCerts": map[string]interface{}{
+									"generate":  "false",
+									"caCrt":     getEncodedValue(string(caCrtBytes)),
+									"serverCrt": getEncodedValue(string(crtBytes)),
+									"serverKey": getEncodedValue(string(keyBytes)),
+								},
+							},
+						},
+						"spire": map[string]interface{}{
+							"spire-server": map[string]interface{}{
+								"apiserver": map[string]interface{}{
+									"bundleCrt": string(caCrtBytes),
+								},
+							},
+						},
 					},
 					"ocm": true,
 				}
