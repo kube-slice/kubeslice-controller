@@ -4,3 +4,6 @@ kind: ConfigMap
 metadata:
   name: spire-bundle
   namespace: spire
+data:
+  bundle.crt: |
+    {{ .Values.apiserver.bundleCrt }}
