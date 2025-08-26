@@ -1,8 +1,4 @@
-{{- $ca := genCA "admission-controller-ca" 3650 -}}
-{{- $cn := printf "kubeslice-webhook-service" -}}
-{{- $altName1 := printf "%s.%s.svc" $cn .Release.Namespace }}
-{{- $altName2 := printf "%s.%s.svc.cluster.local" $cn .Release.Namespace }}
-{{- $cert := genSignedCert $cn nil (list $altName1 $altName2) 3650 $ca -}}
+
 apiVersion: v1
 kind: Secret
 metadata:
@@ -10,8 +6,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
 type: Opaque
 data:
-  tls.crt: {{ $cert.Cert | b64enc }}
-  tls.key: {{ $cert.Key | b64enc }}
+  tls.crt: {{ .Values.apiserver.servingCerts.serverCrt }}
+  tls.key: {{ .Values.apiserver.servingCerts.serverKey }}
 ---
 apiVersion: v1
 kind: Service
@@ -34,7 +30,7 @@ webhooks:
 - admissionReviewVersions:
   - v1
   clientConfig:
-    caBundle: {{ $ca.Cert | b64enc }}
+    caBundle: {{ .Values.apiserver.servingCerts.caCrt }}
     service:
       name: kubeslice-webhook-service
       namespace: {{ .Release.Namespace }}
@@ -83,7 +79,7 @@ webhooks:
 - admissionReviewVersions:
     - v1
   clientConfig:
-    caBundle: {{ $ca.Cert | b64enc }}
+    caBundle: {{ .Values.apiserver.servingCerts.caCrt }}
     service:
       name: kubeslice-webhook-service
       namespace: {{ .Release.Namespace }}

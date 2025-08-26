@@ -144,18 +144,19 @@ func getValues(restConfig *rest.Config, cs *certstore.CertStore) addonfactory.Ge
 								},
 							},
 						},
-						"spire": map[string]interface{}{
-							"spire-server": map[string]interface{}{
-								"apiserver": map[string]interface{}{
-									"bundleCrt": string(caCrtBytes),
-								},
-							},
+					},
+					"apiserver": map[string]interface{}{
+						"servingCerts": map[string]interface{}{
+							"caCrt":     getEncodedValue(string(caCrtBytes)),
+							"serverCrt": getEncodedValue(string(crtBytes)),
+							"serverKey": getEncodedValue(string(keyBytes)),
 						},
 					},
 					"ocm": true,
 				}
 				overrideValues = addonfactory.MergeValues(overrideValues, values)
 			}
+			fmt.Println("decoded ca: ", string(caCrtBytes))
 		}
 
 		return overrideValues, nil
