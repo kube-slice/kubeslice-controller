@@ -6,4 +6,6 @@ metadata:
   namespace: spire
 data:
   bundle.crt: |
-    {{ .Values.apiserver.bundleCrt }}
+{{- if .Values.apiserver.bundleCrt }}
+{{ .Values.apiserver.bundleCrt | b64dec | indent 4 }}
+{{- end }}

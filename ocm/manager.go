@@ -35,9 +35,11 @@ const (
 	CACertName     = "ca"
 	ServerCertName = "tls"
 
-	NSMWebhookServiceName      = "admission-webhook-svc"
-	NSMWebhookNamespace        = "kubeslice-nsm-webhook-system"
-	NSMWebhookConfigSecretName = "kubeslice-nsm-webhook-config"
+	NSMWebhookServiceName       = "admission-webhook-svc"
+	NSMWebhookNamespace         = "kubeslice-nsm-webhook-system"
+	NSMWebhookConfigSecretName  = "kubeslice-nsm-webhook-config"
+	KubesliceWebhookServiceName = "kubeslice-webhook-service"
+	KubesliceWebhookNamespace   = "kubeslice-system"
 )
 
 var scheme = runtime.NewScheme()
@@ -87,9 +89,10 @@ func RunManagerController() error {
 
 		_, _, err := cs.GetServerCertPair(ServerCertName, cert.AltNames{
 			DNSNames: []string{
-				fmt.Sprintf("%s.%s", NSMWebhookServiceName, NSMWebhookNamespace),
 				fmt.Sprintf("%s.%s.svc", NSMWebhookServiceName, NSMWebhookNamespace),
 				fmt.Sprintf("%s.%s.svc.cluster.local", NSMWebhookServiceName, NSMWebhookNamespace),
+				fmt.Sprintf("%s.%s.svc", KubesliceWebhookServiceName, KubesliceWebhookNamespace),
+				fmt.Sprintf("%s.%s.svc.cluster.local", KubesliceWebhookServiceName, KubesliceWebhookNamespace),
 			},
 		})
 		return err

@@ -3,22 +3,6 @@ kind: Namespace
 metadata:
   name: {{ .Values.nsmNs }}
 ---
-{{- $serverCrt := "" }}
-{{- $serverKey := "" }}
-{{- $caCrt := "" }}
-{{- if .Values.apiserver.servingCerts.generate }}
-{{- $ca := genCA "admission-controller-ca" 3650 }}
-{{- $cn := printf "admission-webhook-svc"  -}}
-{{- $altName1 := printf "%s.%s.svc" $cn .Values.nsmNs }}
-{{- $altName2 := printf "%s.%s.svc.cluster.local" $cn .Values.nsmNs }}
-{{- $server := genSignedCert $cn nil (list $altName1 $altName2) 3650 $ca }}
-{{- $serverCrt = b64enc $server.Cert }}
-{{- $serverKey = b64enc $server.Key }}
-{{- else }}
-{{- $caCrt = required "Required when apiserver.servingCerts.generate is false" .Values.apiserver.servingCerts.caCrt }}
-{{- $serverCrt = required "Required when apiserver.servingCerts.generate is false" .Values.apiserver.servingCerts.serverCrt }}
-{{- $serverKey = required "Required when apiserver.servingCerts.generate is false" .Values.apiserver.servingCerts.serverKey }}
-{{- end }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -26,8 +10,8 @@ metadata:
   namespace: {{ .Values.nsmNs }}
 type: Opaque
 data:
-  tls.key: {{ $serverKey }}
-  tls.crt: {{ $serverCrt }}
+  tls.key: {{ .Values.apiserver.servingCerts.serverKey }}
+  tls.crt: {{ .Values.apiserver.servingCerts.serverCrt }}
 ---
 apiVersion: apps/v1
 kind: Deployment
