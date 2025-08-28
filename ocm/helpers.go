@@ -106,8 +106,6 @@ func getValues(restConfig *rest.Config, cs *certstore.CertStore) addonfactory.Ge
 				return nil, err
 			}
 
-			fmt.Println("endpoint: ", string(kubesliceSecret.Data["controllerEndpoint"]))
-
 			caCrtBytes, _, err := cs.ReadBytes(CACertName)
 			if err != nil {
 				return nil, err
@@ -137,7 +135,6 @@ func getValues(restConfig *rest.Config, cs *certstore.CertStore) addonfactory.Ge
 						"admission-webhook": map[string]interface{}{
 							"apiserver": map[string]interface{}{
 								"servingCerts": map[string]interface{}{
-									"generate":  "false",
 									"caCrt":     getEncodedValue(string(caCrtBytes)),
 									"serverCrt": getEncodedValue(string(crtBytes)),
 									"serverKey": getEncodedValue(string(keyBytes)),
@@ -152,11 +149,12 @@ func getValues(restConfig *rest.Config, cs *certstore.CertStore) addonfactory.Ge
 							"serverKey": getEncodedValue(string(keyBytes)),
 						},
 					},
-					"ocm": true,
+					"ocm": map[string]interface{}{
+						"enabled": true,
+					},
 				}
 				overrideValues = addonfactory.MergeValues(overrideValues, values)
 			}
-			fmt.Println("decoded ca: ", string(caCrtBytes))
 		}
 
 		return overrideValues, nil

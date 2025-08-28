@@ -37,7 +37,7 @@ const (
 
 	NSMWebhookServiceName       = "admission-webhook-svc"
 	NSMWebhookNamespace         = "kubeslice-nsm-webhook-system"
-	NSMWebhookConfigSecretName  = "kubeslice-nsm-webhook-config"
+	NSMWebhookConfigSecretName  = "kubeslice-webhook-config"
 	KubesliceWebhookServiceName = "kubeslice-webhook-service"
 	KubesliceWebhookNamespace   = "kubeslice-system"
 )
