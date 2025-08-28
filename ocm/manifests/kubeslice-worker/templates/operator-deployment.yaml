@@ -89,7 +89,7 @@ spec:
           - name: WIREGUARD_CLIENT_PULLPOLICY
             value: '{{ .Values.wireguard.client.pullPolicy }}'
           - name: OCM_ENABLED
-            value: {{.Values.ocm | quote}}
+            value: {{.Values.ocm.enabled | quote}}
 
           {{- if .Values.imagePullSecrets }}
           - name: IMAGE_PULL_SECRET_NAME

@@ -90,12 +90,10 @@ nsm:
       priorityClassName: ""
     spiffe-csi-driver:
       priorityClassName: ""
-ocm: true
+ocm:
+  enabled: false
 apiserver:
   servingCerts:
-    # CA certficate used by serving certificate of webhook server.
     caCrt: ""
-    # Serving certficate used by webhook server.
     serverCrt: ""
-    # Private key for the serving certificate used by webhook server.
     serverKey: ""
