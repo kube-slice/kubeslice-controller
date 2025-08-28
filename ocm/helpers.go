@@ -135,6 +135,7 @@ func getValues(restConfig *rest.Config, cs *certstore.CertStore) addonfactory.Ge
 						"admission-webhook": map[string]interface{}{
 							"apiserver": map[string]interface{}{
 								"servingCerts": map[string]interface{}{
+									"generate":  false,
 									"caCrt":     getEncodedValue(string(caCrtBytes)),
 									"serverCrt": getEncodedValue(string(crtBytes)),
 									"serverKey": getEncodedValue(string(keyBytes)),
@@ -144,6 +145,7 @@ func getValues(restConfig *rest.Config, cs *certstore.CertStore) addonfactory.Ge
 					},
 					"apiserver": map[string]interface{}{
 						"servingCerts": map[string]interface{}{
+							"generate":  false,
 							"caCrt":     getEncodedValue(string(caCrtBytes)),
 							"serverCrt": getEncodedValue(string(crtBytes)),
 							"serverKey": getEncodedValue(string(keyBytes)),
