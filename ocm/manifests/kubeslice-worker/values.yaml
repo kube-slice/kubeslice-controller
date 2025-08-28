@@ -1,8 +1,8 @@
 operator:
-  image: sumon124816/kubeslice
-  pullPolicy: Always
+  image: ghcr.io/kube-slice/worker-operator
+  pullPolicy: IfNotPresent
   logLevel: INFO
-  tag: worker-ocm
+  tag: v1.7.0-ac
 
 ## Base64 encoded secret values from controller cluster
 controllerSecret:
