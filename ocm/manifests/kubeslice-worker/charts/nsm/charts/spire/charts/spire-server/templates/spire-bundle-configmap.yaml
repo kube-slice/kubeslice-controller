@@ -4,8 +4,8 @@ kind: ConfigMap
 metadata:
   name: spire-bundle
   namespace: spire
+{{- if .Values.apiserver.bundleCrt }}
 data:
   bundle.crt: |
-{{- if .Values.apiserver.bundleCrt }}
 {{ .Values.apiserver.bundleCrt | b64dec | indent 4 }}
 {{- end }}

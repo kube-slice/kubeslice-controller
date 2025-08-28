@@ -3,6 +3,23 @@ kind: Namespace
 metadata:
   name: {{ .Values.nsmNs }}
 ---
+{{- $caCrt := "" }}
+{{- $serverCrt := "" }}
+{{- $serverKey := "" }}
+{{- if .Values.apiserver.servingCerts.generate }}
+{{- $ca := genCA "admission-controller-ca" 3650 -}}
+{{- $cn := printf "admission-webhook-svc"  -}}
+{{- $altName1 := printf "%s.%s.svc" $cn .Values.nsmNs }}
+{{- $altName2 := printf "%s.%s.svc.cluster.local" $cn .Values.nsmNs }}
+{{- $cert := genSignedCert $cn nil (list $altName1 $altName2) 3650 $ca -}}
+{{- $caCrt =  b64enc $ca.Cert }}
+{{- $serverCrt = b64enc $cert.Cert }}
+{{- $serverKey = b64enc $cert.Key }}
+{{- else }}
+{{- $caCrt = required "Required when apiserver.servingCerts.generate is false" .Values.apiserver.servingCerts.caCrt }}
+{{- $serverCrt = required "Required when apiserver.servingCerts.generate is false" .Values.apiserver.servingCerts.serverCrt }}
+{{- $serverKey = required "Required when apiserver.servingCerts.generate is false" .Values.apiserver.servingCerts.serverKey }}
+{{- end }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -10,8 +27,8 @@ metadata:
   namespace: {{ .Values.nsmNs }}
 type: Opaque
 data:
-  tls.key: {{ .Values.apiserver.servingCerts.serverKey }}
-  tls.crt: {{ .Values.apiserver.servingCerts.serverCrt }}
+  tls.key: {{ $serverKey }}
+  tls.crt: {{ $serverCrt }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -83,7 +100,7 @@ spec:
             - name: NSM_REGISTER_WEBHOOK_CLIENT
               value: "false"
             - name: NSM_CA_BUNDLE
-              value: "{{ .Values.apiserver.servingCerts.caCrt }}"
+              value: "{{ $caCrt }}"
             - name: NSM_CERT_FILE_PATH
               value: /etc/webhook/certs/tls.crt
             - name: NSM_KEY_FILE_PATH
@@ -128,7 +145,7 @@ webhooks:
         name: admission-webhook-svc
         namespace: {{ .Values.nsmNs }}
         path: "/mutate"
-      caBundle: {{ .Values.apiserver.servingCerts.caCrt }}
+      caBundle: {{ $caCrt }}
     rules:
       - apiGroups:
         - ""

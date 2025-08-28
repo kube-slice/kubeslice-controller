@@ -29,6 +29,7 @@ nsmNs: kubeslice-nsm-webhook-system
 
 apiserver:
   servingCerts:
+    generate: true
     caCrt: ""
     serverCrt: ""
     serverKey: ""

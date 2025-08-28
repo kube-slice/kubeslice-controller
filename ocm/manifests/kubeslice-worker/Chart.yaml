@@ -6,26 +6,26 @@ maintainers:
   - name: appscode
     email: support@appscode.com
 keywords:
-  - multicloud
-  - multi cloud
-  - multitenant
-  - multitenancy
-  - multi tenant
-  - multi tenancy
-  - federated mesh
-  - federated clusters
-  - federated k8s
-  - federated kubernetes
-  - cluster sprawl
-  - sprawl
-  - namespace sprawl
-  - network policy
-  - overlay network
-  - mesh network
-  - security
-  - networking
-  - infrastructure
-  - application
+- multicloud
+- multi cloud
+- multitenant
+- multitenancy
+- multi tenant
+- multi tenancy
+- federated mesh
+- federated clusters
+- federated k8s
+- federated kubernetes
+- cluster sprawl
+- sprawl
+- namespace sprawl
+- network policy
+- overlay network
+- mesh network
+- security
+- networking
+- infrastructure
+- application
 kubeVersion: '>= 1.19.0-0'
 home: https://github.com/kube-slice
 dependencies:
