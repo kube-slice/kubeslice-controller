@@ -19,7 +19,7 @@ cluster:
 router:
   image: ghcr.io/kube-slice/cmd-nse-vl3
   tag: v1.0.6
-  pullPolicy: IfNotPresent                                                                                     
+  pullPolicy: IfNotPresent
 
 routerSidecar:
   image: ghcr.io/kube-slice/router-sidecar
@@ -43,7 +43,7 @@ openvpn:
     tag: v1.0.4
     pullPolicy: IfNotPresent
   client:
-    image: ghcr.io/kube-slice/openvpn-server.alpine
+    image: ghcr.io/kube-slice/openvpn-client.alpine
     tag: v1.0.4
     pullPolicy: IfNotPresent
 
@@ -90,10 +90,13 @@ nsm:
       priorityClassName: ""
     spiffe-csi-driver:
       priorityClassName: ""
+
 ocm:
   enabled: false
+
 apiserver:
   servingCerts:
+    generate: true
     caCrt: ""
     serverCrt: ""
     serverKey: ""

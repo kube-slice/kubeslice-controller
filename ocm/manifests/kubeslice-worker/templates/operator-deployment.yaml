@@ -39,6 +39,9 @@ spec:
         - --leader-elect
         command:
         - /manager
+        {{- if .Values.ocm.enabled }}
+        - --ocm
+        {{- end }}
         image: '{{ .Values.operator.image }}:{{ .Values.operator.tag }}'
         imagePullPolicy: '{{ .Values.operator.pullPolicy }}'
         env:
@@ -88,8 +91,6 @@ spec:
             value: '{{ .Values.wireguard.client.image }}:{{ .Values.wireguard.client.tag }}'
           - name: WIREGUARD_CLIENT_PULLPOLICY
             value: '{{ .Values.wireguard.client.pullPolicy }}'
-          - name: OCM_ENABLED
-            value: {{.Values.ocm.enabled | quote}}
 
           {{- if .Values.imagePullSecrets }}
           - name: IMAGE_PULL_SECRET_NAME
