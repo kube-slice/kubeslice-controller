@@ -29,7 +29,7 @@ import (
 var FS embed.FS
 
 const (
-	AddonName = "kubeslice-addon"
+	AddonName = "kubeslice"
 
 	Duration10Yrs  = 10 * 365 * 24 * time.Hour
 	CACertName     = "ca"
