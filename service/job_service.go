@@ -19,12 +19,12 @@ package service
 import (
 	"context"
 	"fmt"
-
 	"github.com/kubeslice/kubeslice-controller/util"
 	batchv1 "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/uuid"
+	"os"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -33,6 +33,49 @@ type IJobService interface {
 }
 
 type JobService struct{}
+
+func getPodSpecForJob(jobImage string, envValues []v1.EnvVar) v1.PodSpec {
+	switch os.Getenv("Openshift") {
+	case "true":
+		return v1.PodSpec{
+			RestartPolicy: "Never",
+			Containers: []v1.Container{
+				{
+					Name:  "ovpn-cert-generator",
+					Image: jobImage,
+					Env:   envValues,
+					VolumeMounts: []v1.VolumeMount{
+						{
+							Name:      "workdir",
+							MountPath: "/work",
+						},
+					},
+				},
+			},
+			ServiceAccountName: JobServiceAccount,
+			Volumes: []v1.Volume{
+				{
+					Name: "workdir",
+					VolumeSource: v1.VolumeSource{
+						EmptyDir: &v1.EmptyDirVolumeSource{},
+					},
+				},
+			},
+		}
+	default:
+		return v1.PodSpec{
+			RestartPolicy: "Never",
+			Containers: []v1.Container{
+				{
+					Name:  "ovpn-cert-generator",
+					Image: jobImage,
+					Env:   envValues,
+				},
+			},
+			ServiceAccountName: JobServiceAccount,
+		}
+	}
+}
 
 // CreateJob is function to create the job in k8s
 func (j *JobService) CreateJob(ctx context.Context, namespace string, jobImage string, environment map[string]string) (ctrl.Result, error) {
@@ -77,17 +120,7 @@ func (j *JobService) CreateJob(ctx context.Context, namespace string, jobImage s
 					Name:      "ovpn-cert-job-pod",
 					Namespace: namespace,
 				},
-				Spec: v1.PodSpec{
-					RestartPolicy: "Never",
-					Containers: []v1.Container{
-						{
-							Name:  "ovpn-cert-generator",
-							Image: jobImage,
-							Env:   envValues,
-						},
-					},
-					ServiceAccountName: JobServiceAccount,
-				},
+				Spec: getPodSpecForJob(jobImage, envValues),
 			},
 		},
 		Status: batchv1.JobStatus{},
