@@ -193,7 +193,7 @@ cleanup:
 .PHONY: generate-mocks
 generate-mocks: ## Generate mocks for the controller-runtime.
 	mockery --dir service/ --all  --output service/mocks
-	mockery --dir util/ --name Client  --output util/mocks
+	mockery --dir vendor/sigs.k8s.io/controller-runtime/pkg/client --name Client  --output util/mocks
 	mockery --dir metrics/ --all --output metrics/mocks
 
 .PHONY: unit-test
