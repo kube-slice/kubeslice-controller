@@ -28,9 +28,11 @@ COPY cleanup/ cleanup/
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -a -o manager main.go
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -a -o cleanup ./cleanup/
 
-# Use distroless as minimal base image to package the manager binary
-# Refer to https://github.com/GoogleContainerTools/distroless for more details
-FROM gcr.io/distroless/static-debian12:nonroot
+FROM registry.access.redhat.com/ubi10/ubi-minimal as runtime
+
+RUN mkdir -p /licenses
+COPY LICENSE /licenses/
+
 WORKDIR /
 COPY --from=builder /workspace/manager .
 COPY --from=builder /workspace/cleanup/cleanup .
