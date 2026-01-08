@@ -84,9 +84,23 @@ func (j *JobService) CreateJob(ctx context.Context, namespace string, jobImage s
 							Name:  "ovpn-cert-generator",
 							Image: jobImage,
 							Env:   envValues,
+							VolumeMounts: []v1.VolumeMount{
+								{
+									Name:      "workdir",
+									MountPath: "/work",
+								},
+							},
 						},
 					},
 					ServiceAccountName: JobServiceAccount,
+					Volumes: []v1.Volume{
+						{
+							Name: "workdir",
+							VolumeSource: v1.VolumeSource{
+								EmptyDir: &v1.EmptyDirVolumeSource{},
+							},
+						},
+					},
 				},
 			},
 		},
