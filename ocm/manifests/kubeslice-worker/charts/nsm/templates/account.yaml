@@ -1,0 +1,7 @@
+{{- if .Values.global.distro.openshift }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: forwarder-kernel
+  namespace: {{ .Release.Namespace }}
+{{end}}

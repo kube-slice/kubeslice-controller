@@ -51,30 +51,20 @@ spec:
     metadata:
       labels:
         app: nsmgr
-        "spiffe.io/spiffe-id": "true"
     spec:
       serviceAccountName: nsmgr-acc
       imagePullSecrets:
-      - name: {{ template "imagePullSecrets.secretName" . }}
+        - name: {{ template "imagePullSecrets.secretName" . }}
       initContainers:
-        - name: init
-          # This is a small image with wait-for-it, choose whatever image
-          # you prefer that waits for a service to be up. This image is built
-          # from https://github.com/lqhl/wait-for-it
-          image: '{{ .Values.global.imageRegistry }}/{{ .Values.nsmgr.waitForItImageRegistry }}:{{ .Values.nsmgr.waitForItImageTag }}'
-          imagePullPolicy: IfNotPresent
-          args: [ "-t", "120", "spire-server.spire:8081" ]
-          #command: ['sh', '-c', 'sleep 120']
-          #command: ['sh', '-c', "t=0; until [ -f /run/spire/sockets/agent.sock 2>&1 ] || [ $t -eq 5 ]; do t=`expr $t + 1`; sleep 15; done;"]
         - env:
-          - name: MY_NODE_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: spec.nodeName
-          - name: MY_POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
+            - name: MY_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           image: "{{ .Values.global.imageRegistry }}/alpine-k8s:1.32.2"
           imagePullPolicy: IfNotPresent
           name: nsmgr-init-svc-creator
@@ -82,14 +72,14 @@ spec:
             - /bin/sh
             - /tmp/create-nsmgr-svc.sh
           volumeMounts:
-          - mountPath: /tmp/
-            name: nsm-svc-config-volume
+            - mountPath: /tmp/
+              name: nsm-svc-config-volume
       imagePullSecrets:
-      - name: {{ template "imagePullSecrets.secretName" . }}
+        - name: {{ template "imagePullSecrets.secretName" . }}
       containers:
         - image: '{{ .Values.global.imageRegistry }}/{{ .Values.nsmgr.imageRegistry }}:{{ .Values.nsmgr.imageTag }}'
           imagePullPolicy: IfNotPresent
-          {{- if .Values.global.profile.openshift }}
+          {{- if .Values.global.distro.openshift }}
           securityContext:
             privileged: true
           {{- end }}
@@ -97,8 +87,6 @@ spec:
           ports:
             - containerPort: 5001
           env:
-            - name: SPIFFE_ENDPOINT_SOCKET
-              value: unix:///run/spire/sockets/agent.sock
             - name: NSM_NAME
               valueFrom:
                 fieldRef:
@@ -136,8 +124,6 @@ spec:
           volumeMounts:
             - name: kubelet-socket
               mountPath: /var/lib/kubelet/device-plugins
-            - name: spire-agent-socket
-              mountPath: /run/spire/sockets
               readOnly: true
             - name: nsm-socket
               mountPath: /var/lib/networkservicemesh
@@ -150,29 +136,9 @@ spec:
             limits:
               memory: 200Mi
               cpu: 500m
-          readinessProbe:
-            exec:
-              command: ["/bin/grpc-health-probe", "-spiffe", "-addr=:5001"]
-            failureThreshold: 300
-            initialDelaySeconds: 1
-            periodSeconds: 15
-            successThreshold: 1
-            timeoutSeconds: 2
-          livenessProbe:
-            exec:
-              command: ["/bin/grpc-health-probe", "-spiffe", "-addr=:5001"]
-            failureThreshold: 25
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 2
-          startupProbe:
-            exec:
-              command: ["/bin/grpc-health-probe", "-spiffe", "-addr=:5001"]
-            failureThreshold: 25
-            periodSeconds: 5
         - image: '{{ .Values.global.imageRegistry }}/{{ .Values.nsmgr.excludePrefixesImageRegistry }}:{{ .Values.nsmgr.excludePrefixesImageTag }}'
           imagePullPolicy: IfNotPresent
-          {{- if .Values.global.profile.openshift }}
+          {{- if .Values.global.distro.openshift }}
           securityContext:
             privileged: true
           {{- end }}
@@ -196,10 +162,6 @@ spec:
             path: /var/lib/kubelet/device-plugins
             type: DirectoryOrCreate
           name: kubelet-socket
-        - name: spire-agent-socket
-          hostPath:
-            path: /run/spire/sockets
-            type: Directory
         - name: nsm-socket
           hostPath:
             path: /var/lib/networkservicemesh

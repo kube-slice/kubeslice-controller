@@ -15,10 +15,11 @@ global:
   imageRegistry: ghcr.io/kube-slice
 
 webhookImageRegistry: cmd-admission-webhook-k8s
-webhookImageTag: v1.7.3
+webhookImageTag: v2026.1.15
 
-nsmInjectContainerImageRegistry: cmd-nsc
-nsmInjectContainerImageTag: v1.5.12
+nsmInjectContainerImageRegistry: cmd-nsc-grpc
+nsmInjectContainerImageTag: v2026.1.15
+nscGrpcServerAddr: cmd-nsc-grpc-server.kubeslice-system.svc.cluster.local:50052
 
 nsmInjectInitContainerImageRegistry: cmd-nsc-init
 nsmInjectInitContainerImageTag: v1.5.8

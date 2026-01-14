@@ -26,7 +26,7 @@ spec:
                 values:
                 - gateway
       hostNetwork: true
-      serviceAccount: kubeslice-netop
+      serviceAccountName: kubeslice-netop
       containers:
       - env:
         - name: POD_TYPE

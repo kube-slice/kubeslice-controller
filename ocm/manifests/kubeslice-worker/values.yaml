@@ -1,8 +1,8 @@
 operator:
-  image: ghcr.io/kube-slice/worker-operator
-  pullPolicy: IfNotPresent
+  image: sumon124816/kubeslice
+  pullPolicy: Always
   logLevel: INFO
-  tag: v1.7.0-ac
+  tag: worker-ocm
 
 ## Base64 encoded secret values from controller cluster
 controllerSecret:
@@ -18,7 +18,7 @@ cluster:
 
 router:
   image: ghcr.io/kube-slice/cmd-nse-vl3
-  tag: v1.0.6
+  tag: v2026.1.15
   pullPolicy: IfNotPresent
 
 routerSidecar:
@@ -77,6 +77,8 @@ controllerNamespace: kubeslice-controller
 global:
   imageRegistry: ghcr.io/kube-slice
   profile:
+    openshift: false
+  distro:
     openshift: false
 
 # enable/disable network component installation

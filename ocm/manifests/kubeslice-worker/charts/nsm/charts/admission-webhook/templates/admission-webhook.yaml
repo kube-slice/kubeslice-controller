@@ -67,6 +67,10 @@ spec:
         - name: admission-webhook-k8s
           image: '{{ .Values.global.imageRegistry }}/{{ .Values.webhookImageRegistry }}:{{ .Values.webhookImageTag }}'
           imagePullPolicy: IfNotPresent
+          {{- if .Values.global.distro.openshift }}
+          securityContext:
+            privileged: true
+          {{end}}
           readinessProbe:
             httpGet:
               path: /ready
@@ -96,7 +100,7 @@ spec:
             - name: NSM_ENVS
               value: NSM_CONNECT_TO=tcp://nsmgr.kubeslice-system.svc.cluster.local:5001,NSM_LOG_LEVEL=TRACE,NSM_LIVENESSCHECKENABLED=false,NSM_REQUEST_TIMEOUT=60s,NSM_INITLOCALDNSCONFIG={{ .Values.nsmInitContainerUpdateDNSConfig }}
             - name: PROFILE_OPENSHIFT
-              value: "{{ .Values.global.profile.openshift | default false }}"
+              value: "{{ .Values.global.distro.openshift | default false }}"
             - name: NSM_REGISTER_WEBHOOK_CLIENT
               value: "false"
             - name: NSM_CA_BUNDLE
@@ -105,6 +109,8 @@ spec:
               value: /etc/webhook/certs/tls.crt
             - name: NSM_KEY_FILE_PATH
               value: /etc/webhook/certs/tls.key
+            - name: NSC_GRPC_SERVER_ADDR
+              value: {{.Values.nscGrpcServerAddr}}
           volumeMounts:
             - name: webhook-certs
               mountPath: /etc/webhook/certs
