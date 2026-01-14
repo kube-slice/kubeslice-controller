@@ -19,7 +19,7 @@ webhookImageTag: v2026.1.15
 
 nsmInjectContainerImageRegistry: cmd-nsc-grpc
 nsmInjectContainerImageTag: v2026.1.15
-nscGrpcServerAddr: cmd-nsc-grpc-server.kubeslice-system.svc.cluster.local:50052
+nscGrpcServerAddr: nsc-grpc-server.kubeslice-system.svc:50052
 
 nsmInjectInitContainerImageRegistry: cmd-nsc-init
 nsmInjectInitContainerImageTag: v1.5.8

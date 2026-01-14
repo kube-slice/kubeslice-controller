@@ -3,13 +3,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: nsc-grpc-server
-  namespace: kubeslice-system
+  namespace: {{ .Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: nsc-grpc-server-pod-reader
-  namespace: kubeslice-system
+  namespace: {{ .Release.Namespace }}
 rules:
   - apiGroups: [""]
     resources:
@@ -22,11 +22,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: nsc-grpc-server-pod-reader-binding
-  namespace: kubeslice-system
+  namespace: {{ .Release.Namespace }}
 subjects:
   - kind: ServiceAccount
     name: nsc-grpc-server
-    namespace: kubeslice-system
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: nsc-grpc-server-pod-reader
@@ -35,25 +35,25 @@ roleRef:
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: cmd-nsc-grpc-server
-  namespace: kubeslice-system
+  name: nsc-grpc-server
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app: cmd-nsc-grpc-server
+      app: nsc-grpc-server
   template:
     metadata:
       labels:
-        app: cmd-nsc-grpc-server
+        app: nsc-grpc-server
     spec:
       serviceAccountName: nsc-grpc-server
       containers:
-        - name: cmd-nsc-grpc-server
+        - name: nsc-grpc-server
           image: "{{ .Values.global.imageRegistry }}/{{.Values.nscgrpc.cmdnscgrpcServerImageRegistry}}:{{.Values.nscgrpc.cmdnscgrpcServerImageTag}}"
           imagePullPolicy: Always
           env:
             - name: NSM_CONNECT_TO
-              value: tcp://nsmgr.kubeslice-system.svc.cluster.local:5001
+              value: tcp://nsmgr.kubeslice-system.svc:5001
             - name: NSM_LOG_LEVEL
               value: TRACE
             - name: NSM_LIVENESSCHECKENABLED
@@ -85,7 +85,7 @@ spec:
             runAsNonRoot: false
             runAsUser: 0
             runAsGroup: 0
-            privileged: {{.Values.global.distro.openshift}}
+            privileged: {{ eq "true" ( include "distro.openshift" . ) }}
             capabilities:
               add:
                 - NET_BIND_SERVICE
@@ -93,11 +93,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: cmd-nsc-grpc-server
-  namespace: kubeslice-system
+  name: nsc-grpc-server
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
-    app: cmd-nsc-grpc-server
+    app: nsc-grpc-server
   ports:
     - protocol: TCP
       port: 50052

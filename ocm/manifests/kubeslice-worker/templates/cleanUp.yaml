@@ -12,6 +12,7 @@ metadata:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     "helm.sh/hook-weight": "1"
+    "open-cluster-management.io/addon-pre-delete": ""
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -22,6 +23,7 @@ metadata:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     "helm.sh/hook-weight": "1"
+    "open-cluster-management.io/addon-pre-delete": ""
   labels:
     app.kubernetes.io/name: kubeslice
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -44,6 +46,7 @@ metadata:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     "helm.sh/hook-weight": "1"
+    "open-cluster-management.io/addon-pre-delete": ""
   labels:
     app.kubernetes.io/name: kubeslice
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -71,6 +74,7 @@ metadata:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook-weight": "2"
+    "open-cluster-management.io/addon-pre-delete": ""
   labels:
     app.kubernetes.io/name: nsm
     app.kubernetes.io/instance: {{ .Release.Name }}

@@ -54,17 +54,17 @@ spec:
     spec:
       serviceAccountName: nsmgr-acc
       imagePullSecrets:
-        - name: {{ template "imagePullSecrets.secretName" . }}
+      - name: {{ template "imagePullSecrets.secretName" . }}
       initContainers:
         - env:
-            - name: MY_NODE_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-            - name: MY_POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
+          - name: MY_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
           image: "{{ .Values.global.imageRegistry }}/alpine-k8s:1.32.2"
           imagePullPolicy: IfNotPresent
           name: nsmgr-init-svc-creator
@@ -72,14 +72,14 @@ spec:
             - /bin/sh
             - /tmp/create-nsmgr-svc.sh
           volumeMounts:
-            - mountPath: /tmp/
-              name: nsm-svc-config-volume
+          - mountPath: /tmp/
+            name: nsm-svc-config-volume
       imagePullSecrets:
-        - name: {{ template "imagePullSecrets.secretName" . }}
+      - name: {{ template "imagePullSecrets.secretName" . }}
       containers:
         - image: '{{ .Values.global.imageRegistry }}/{{ .Values.nsmgr.imageRegistry }}:{{ .Values.nsmgr.imageTag }}'
           imagePullPolicy: IfNotPresent
-          {{- if .Values.global.distro.openshift }}
+          {{- if eq "true" ( include "distro.openshift" . ) }}
           securityContext:
             privileged: true
           {{- end }}
@@ -138,7 +138,7 @@ spec:
               cpu: 500m
         - image: '{{ .Values.global.imageRegistry }}/{{ .Values.nsmgr.excludePrefixesImageRegistry }}:{{ .Values.nsmgr.excludePrefixesImageTag }}'
           imagePullPolicy: IfNotPresent
-          {{- if .Values.global.distro.openshift }}
+          {{- if eq "true" ( include "distro.openshift" . ) }}
           securityContext:
             privileged: true
           {{- end }}

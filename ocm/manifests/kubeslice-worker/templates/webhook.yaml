@@ -4,8 +4,8 @@
 {{- if .Values.apiserver.servingCerts.generate }}
 {{- $ca := genCA "admission-controller-ca" 3650 -}}
 {{- $cn := printf "kubeslice-webhook-service" -}}
-{{- $altName1 := printf "%s.%s.svc" $cn .Release.Namespace }}
-{{- $altName2 := printf "%s.%s.svc.cluster.local" $cn .Release.Namespace }}
+{{- $altName1 := printf "%s.%s" $cn .Release.Namespace }}
+{{- $altName2 := printf "%s.%s.svc" $cn .Release.Namespace }}
 {{- $cert := genSignedCert $cn nil (list $altName1 $altName2) 3650 $ca -}}
 {{- $caCrt =  b64enc $ca.Cert }}
 {{- $serverCrt = b64enc $cert.Cert }}

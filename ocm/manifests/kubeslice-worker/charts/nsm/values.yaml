@@ -2,7 +2,7 @@
 # Default values for nsm.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-  
+
 insecure: true
 global:
   nsm_docker_existingImagePullSecret: "kubeslice-image-pull-secret"
@@ -31,6 +31,7 @@ nsmgr:
 
 registryK8sImageRegistry: cmd-registry-k8s
 registryK8sImageTag: v2026.1.15
+
 nscgrpc:
   cmdnscgrpcServerImageRegistry: cmd-nsc
   cmdnscgrpcServerImageTag: v2026.1.15

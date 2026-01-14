@@ -18,14 +18,14 @@ spec:
       hostPID: true
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
-      {{- if .Values.global.distro.openshift }}
+      {{- if eq "true" ( include "distro.openshift" . ) }}
       serviceAccountName: forwarder-kernel
       {{end}}
       imagePullSecrets:
-        - name: {{ template "imagePullSecrets.secretName" . }}
+      - name: {{ template "imagePullSecrets.secretName" . }}
       containers:
         - image: '{{ .Values.global.imageRegistry }}/{{ .Values.forwardingPlane.kernelImageRegistry }}:{{ .Values.forwardingPlane.kernelImageTag }}'
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           name: forwarder-kernel
           securityContext:
             privileged: true
