@@ -5,6 +5,7 @@ metadata:
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
+    "addon.open-cluster-management.io/addon-pre-delete": ""
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
 spec:

@@ -1433,8 +1433,8 @@ kmodules.xyz/client-go/client
 kmodules.xyz/client-go/client/apiutil
 kmodules.xyz/client-go/core/v1
 kmodules.xyz/client-go/meta
-# open-cluster-management.io/addon-framework v1.1.1-0.20260105081800-f54bfbcd9878
-## explicit; go 1.25.0
+# open-cluster-management.io/addon-framework v1.0.0
+## explicit; go 1.23.6
 open-cluster-management.io/addon-framework/pkg/addonfactory
 open-cluster-management.io/addon-framework/pkg/addonmanager
 open-cluster-management.io/addon-framework/pkg/addonmanager/constants
@@ -1448,21 +1448,17 @@ open-cluster-management.io/addon-framework/pkg/agent
 open-cluster-management.io/addon-framework/pkg/assets
 open-cluster-management.io/addon-framework/pkg/index
 open-cluster-management.io/addon-framework/pkg/utils
-# open-cluster-management.io/api v1.1.1-0.20251222023835-510285203ee6
-## explicit; go 1.25.0
+# open-cluster-management.io/api v1.0.0
+## explicit; go 1.23.6
 open-cluster-management.io/api/addon/v1alpha1
-open-cluster-management.io/api/addon/v1beta1
 open-cluster-management.io/api/client/addon/clientset/versioned
 open-cluster-management.io/api/client/addon/clientset/versioned/scheme
 open-cluster-management.io/api/client/addon/clientset/versioned/typed/addon/v1alpha1
-open-cluster-management.io/api/client/addon/clientset/versioned/typed/addon/v1beta1
 open-cluster-management.io/api/client/addon/informers/externalversions
 open-cluster-management.io/api/client/addon/informers/externalversions/addon
 open-cluster-management.io/api/client/addon/informers/externalversions/addon/v1alpha1
-open-cluster-management.io/api/client/addon/informers/externalversions/addon/v1beta1
 open-cluster-management.io/api/client/addon/informers/externalversions/internalinterfaces
 open-cluster-management.io/api/client/addon/listers/addon/v1alpha1
-open-cluster-management.io/api/client/addon/listers/addon/v1beta1
 open-cluster-management.io/api/client/cluster/clientset/versioned
 open-cluster-management.io/api/client/cluster/clientset/versioned/scheme
 open-cluster-management.io/api/client/cluster/clientset/versioned/typed/cluster/v1
@@ -1495,15 +1491,13 @@ open-cluster-management.io/api/cluster/v1
 open-cluster-management.io/api/cluster/v1alpha1
 open-cluster-management.io/api/cluster/v1beta1
 open-cluster-management.io/api/cluster/v1beta2
-open-cluster-management.io/api/operator/v1
 open-cluster-management.io/api/utils/work/v1/workapplier
 open-cluster-management.io/api/work/v1
 open-cluster-management.io/api/work/v1alpha1
-# open-cluster-management.io/sdk-go v1.1.1-0.20251125014036-c7d6056a7936
-## explicit; go 1.24.0
+# open-cluster-management.io/sdk-go v1.0.0
+## explicit; go 1.23.6
 open-cluster-management.io/sdk-go/pkg/apis/work/v1/applier
 open-cluster-management.io/sdk-go/pkg/apis/work/v1/builder
-open-cluster-management.io/sdk-go/pkg/basecontroller/events
 open-cluster-management.io/sdk-go/pkg/basecontroller/factory
 open-cluster-management.io/sdk-go/pkg/patcher
 # sigs.k8s.io/apiserver-network-proxy/konnectivity-client v0.31.2

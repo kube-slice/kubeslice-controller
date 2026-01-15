@@ -30,16 +30,14 @@ func (c baseController) Name() string {
 	return c.name
 }
 
-func waitForNamedCacheSync(ctx context.Context, controllerName string, stopCh <-chan struct{}, cacheSyncs ...cache.InformerSynced) error {
-	logger := klog.FromContext(ctx)
-
-	logger.Info("Waiting for caches to sync")
+func waitForNamedCacheSync(controllerName string, stopCh <-chan struct{}, cacheSyncs ...cache.InformerSynced) error {
+	klog.Infof("Waiting for caches to sync for %s", controllerName)
 
 	if !cache.WaitForCacheSync(stopCh, cacheSyncs...) {
 		return fmt.Errorf("unable to sync caches for %s", controllerName)
 	}
 
-	logger.Info("Caches are synced")
+	klog.Infof("Caches are synced for %s ", controllerName)
 
 	return nil
 }
@@ -49,13 +47,10 @@ func (c *baseController) SyncContext() SyncContext {
 }
 
 func (c *baseController) Run(ctx context.Context, workers int) {
-	logger := klog.FromContext(ctx).WithName(c.name)
-	ctx = klog.NewContext(ctx, logger)
-
 	// give caches 10 minutes to sync
 	cacheSyncCtx, cacheSyncCancel := context.WithTimeout(ctx, c.cacheSyncTimeout)
 	defer cacheSyncCancel()
-	err := waitForNamedCacheSync(ctx, c.name, cacheSyncCtx.Done(), c.cachesToSync...)
+	err := waitForNamedCacheSync(c.name, cacheSyncCtx.Done(), c.cachesToSync...)
 	if err != nil {
 		select {
 		case <-ctx.Done():
@@ -72,19 +67,19 @@ func (c *baseController) Run(ctx context.Context, workers int) {
 
 	var workerWg sync.WaitGroup
 	defer func() {
-		defer logger.Info("All workers have been terminated")
+		defer klog.Infof("All %s workers have been terminated", c.name)
 		workerWg.Wait()
 	}()
 
 	// queueContext is used to track and initiate queue shutdown
-	queueContext, queueContextCancel := context.WithCancel(ctx)
+	queueContext, queueContextCancel := context.WithCancel(context.TODO())
 
 	for i := 1; i <= workers; i++ {
-		logger.Info("Starting worker of controller ...", "numberOfWorkers", i)
+		klog.Infof("Starting #%d worker of %s controller ...", i, c.name)
 		workerWg.Add(1)
 		go func() {
 			defer func() {
-				logger.Info("Shutting down worker of controller ...")
+				klog.Infof("Shutting down worker of %s controller ...", c.name)
 				workerWg.Done()
 			}()
 			c.runWorker(queueContext)
@@ -109,7 +104,7 @@ func (c *baseController) Run(ctx context.Context, workers int) {
 	// Wait for all workers to finish their job.
 	// at this point the Run() can hang and caller have to implement the logic that will kill
 	// this controller (SIGKILL).
-	logger.Info("Shutting down ...")
+	klog.Infof("Shutting down %s ...", c.name)
 }
 
 func (c *baseController) Sync(ctx context.Context, syncCtx SyncContext, key string) error {
@@ -145,8 +140,6 @@ func (c *baseController) runWorker(queueCtx context.Context) {
 }
 
 func (c *baseController) processNextWorkItem(queueCtx context.Context) {
-	logger := klog.FromContext(queueCtx)
-
 	key, quit := c.syncContext.Queue().Get()
 	if quit {
 		return
@@ -154,13 +147,18 @@ func (c *baseController) processNextWorkItem(queueCtx context.Context) {
 	defer c.syncContext.Queue().Done(key)
 
 	syncCtx := c.syncContext.(syncContext)
-	queueKey := key
+	var ok bool
+	queueKey, ok := key.(string)
+	if !ok {
+		utilruntime.HandleError(fmt.Errorf("%q controller failed to process key %q (not a string)", c.name, key))
+		return
+	}
 
 	if err := c.sync(queueCtx, syncCtx, queueKey); err != nil {
-		if logger.V(4).Enabled() || key != "key" {
-			utilruntime.HandleErrorWithContext(queueCtx, err, "controller failed to sync", "key", key, "error", err)
+		if klog.V(4).Enabled() || key != "key" {
+			utilruntime.HandleError(fmt.Errorf("%q controller failed to sync %q, err: %w", c.name, key, err))
 		} else {
-			utilruntime.HandleErrorWithContext(queueCtx, err, "reconciliation failed", "error", err)
+			utilruntime.HandleError(fmt.Errorf("%s reconciliation failed: %w", c.name, err))
 		}
 		c.syncContext.Queue().AddRateLimited(key)
 		return
