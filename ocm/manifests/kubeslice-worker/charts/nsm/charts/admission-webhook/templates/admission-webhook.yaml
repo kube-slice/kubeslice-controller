@@ -100,7 +100,7 @@ spec:
             - name: NSM_ENVS
               value: NSM_CONNECT_TO=tcp://nsmgr.kubeslice-system.svc:5001,NSM_LOG_LEVEL=TRACE,NSM_LIVENESSCHECKENABLED=false,NSM_REQUEST_TIMEOUT=60s,NSM_INITLOCALDNSCONFIG={{ .Values.nsmInitContainerUpdateDNSConfig }}
             - name: PROFILE_OPENSHIFT
-              value: {{ include "distro.openshift" . }}
+              value: {{ include "distro.openshift" . | quote }}
             - name: NSM_REGISTER_WEBHOOK_CLIENT
               value: "false"
             - name: NSM_CA_BUNDLE
