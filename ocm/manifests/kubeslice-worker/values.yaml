@@ -1,0 +1,103 @@
+operator:
+  image: ghcr.io/kube-slice/worker-operator
+  pullPolicy: IfNotPresent
+  logLevel: INFO
+  tag: v2026.1.15
+
+## Base64 encoded secret values from controller cluster
+controllerSecret:
+  namespace:
+  endpoint:
+  ca.crt:
+  token:
+
+cluster:
+  name:
+  nodeIp: # This field is deprecated. You can set nodeIPs through cluster spec.
+  endpoint:
+
+router:
+  image: ghcr.io/kube-slice/cmd-nse-vl3
+  tag: v2026.1.15
+  pullPolicy: IfNotPresent
+
+routerSidecar:
+  image: ghcr.io/kube-slice/router-sidecar
+  tag: v1.5.0-ac
+  pullPolicy: IfNotPresent
+
+
+gateway:
+  image: ghcr.io/kube-slice/gateway-sidecar
+  tag: v1.1.0-ac
+  pullPolicy: IfNotPresent
+  logLevel: INFO
+
+gatewayEdge:
+  image: ghcr.io/kube-slice/slicegw-edge
+  tag: v1.1.0-ac
+
+openvpn:
+  server:
+    image: ghcr.io/kube-slice/openvpn-server.alpine
+    tag: v1.0.4
+    pullPolicy: IfNotPresent
+  client:
+    image: ghcr.io/kube-slice/openvpn-client.alpine
+    tag: v1.0.4
+    pullPolicy: IfNotPresent
+
+wireguard:
+  server:
+    image: ghcr.io/kube-slice/wireguard-server.alpine
+    tag: v0.1.0-ac
+    pullPolicy: IfNotPresent
+  client:
+    image: ghcr.io/kube-slice/wireguard-client.alpine
+    tag: v0.1.0-ac
+    pullPolicy: IfNotPresent
+
+dns:
+  image: ghcr.io/kube-slice/dns
+  tag: v0.2.0-ac
+  pullPolicy: IfNotPresent
+
+jaeger:
+  enabled: false
+
+events:
+  disabled: true
+
+imagePullSecrets:
+  - name: regcred
+
+# change ths value for intracluster where controller cluster is in same cluster as worker as is different from default
+controllerNamespace: kubeslice-controller
+
+global:
+  imageRegistry: ghcr.io/kube-slice
+  distro:
+    openshift: false
+    ubi: ""
+
+# enable/disable network component installation
+kubesliceNetworking:
+  enabled: true
+
+nsm:
+  spire:
+    priorityClassName: ""
+    spire-server:
+      priorityClassName: ""
+    spiffe-csi-driver:
+      priorityClassName: ""
+
+ocm:
+  enabled: false
+
+apiserver:
+  servingCerts:
+    generate: true
+    caCrt: ""
+    serverCrt: ""
+    serverKey: ""

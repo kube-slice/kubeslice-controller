@@ -28,6 +28,8 @@ const (
 	ComponentHealthStatusError   = "Error"
 )
 
+var ResourceClusterConfigs = "clusters"
+
 type ClusterHealthStatus string
 
 const (

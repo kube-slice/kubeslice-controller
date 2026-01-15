@@ -1,0 +1,7 @@
+---
+dependencies:
+  - name: admission-webhook
+    version: 0.3.2
+  - name: config
+    version: 1.0.1
+

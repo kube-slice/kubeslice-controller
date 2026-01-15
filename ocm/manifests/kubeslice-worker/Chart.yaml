@@ -1,0 +1,41 @@
+apiVersion: v2
+description: Kubeslice operator - A Helm chart for managing life-cycle management of Kubeslice
+name: kubeslice-worker
+type: application
+maintainers:
+  - name: appscode
+    email: support@appscode.com
+keywords:
+- multicloud
+- multi cloud
+- multitenant
+- multitenancy
+- multi tenant
+- multi tenancy
+- federated mesh
+- federated clusters
+- federated k8s
+- federated kubernetes
+- cluster sprawl
+- sprawl
+- namespace sprawl
+- network policy
+- overlay network
+- mesh network
+- security
+- networking
+- infrastructure
+- application
+kubeVersion: '>= 1.28.0'
+home: https://github.com/kube-slice
+dependencies:
+  - name: nsm
+    repository: file://./charts/nsm
+    version: 0.6.4
+    condition: kubesliceNetworking.enabled
+  - name: netop
+    repository: file://./charts/netop
+    version: 0.2.0
+    condition: kubesliceNetworking.enabled
+version: v2026.1.15
+appVersion: v2026.1.15

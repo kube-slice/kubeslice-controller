@@ -1,0 +1,36 @@
+---
+# Default values for admission-webhook.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  nsmw_docker_existingImagePullSecret: "kubeslice-image-pull-secret"
+  # IF You dont have existing secret then pass all below values it will create new secret "avesha-docker-ips"
+  ## MANDOTORY FIELDS IF EXISTING SECRET NOT PRESENT ##
+  nsmw_docker_imagePullSecrets:
+    repository:
+    username: ''
+    password: ''
+    email: ''
+  imageRegistry: ghcr.io/kube-slice
+
+webhookImageRegistry: cmd-admission-webhook-k8s
+webhookImageTag: v2026.1.15
+
+nsmInjectContainerImageRegistry: cmd-nsc-grpc
+nsmInjectContainerImageTag: v2026.1.15
+nscGrpcServerAddr: nsc-grpc-server.kubeslice-system.svc:50052
+
+nsmInjectInitContainerImageRegistry: cmd-nsc-init
+nsmInjectInitContainerImageTag: v1.5.8
+nsmInitContainerUpdateDNSConfig: true
+
+# nsm admission webhook ns
+nsmNs: kubeslice-nsm-webhook-system
+
+apiserver:
+  servingCerts:
+    generate: true
+    caCrt: ""
+    serverCrt: ""
+    serverKey: ""

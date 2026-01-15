@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: forwarder-kernel
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: forwarder-kernel
+spec:
+  selector:
+    matchLabels:
+      app: forwarder-kernel
+  template:
+    metadata:
+      labels:
+        app: forwarder-kernel
+    spec:
+      hostPID: true
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- if eq "true" ( include "distro.openshift" . ) }}
+      serviceAccountName: forwarder-kernel
+      {{end}}
+      imagePullSecrets:
+      - name: {{ template "imagePullSecrets.secretName" . }}
+      containers:
+        - image: '{{ .Values.global.imageRegistry }}/{{ .Values.forwardingPlane.kernelImageRegistry }}:{{ .Values.forwardingPlane.kernelImageTag }}'
+          imagePullPolicy: IfNotPresent
+          name: forwarder-kernel
+          securityContext:
+            privileged: true
+          env:
+            - name: NSM_LOG_LEVEL
+              value: TRACE
+            - name: NSM_TUNNEL_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NSM_CONNECT_TO
+              value: unix:///var/lib/networkservicemesh/nsm.io.sock
+            - name: NSM_LISTEN_ON
+              value: unix:///listen.on.sock
+            - name: NSM_DIAL_TIMEOUT
+              value: "5000ms"
+            - name: NSM_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+            - name: nsm-socket
+              mountPath: /var/lib/networkservicemesh
+            - name: kubelet-socket
+              mountPath: /var/lib/kubelet
+            - name: cgroup
+              mountPath: /host/sys/fs/cgroup
+          resources:
+            requests:
+              cpu: 150m
+            limits:
+              memory: 500Mi
+              cpu: 525m
+      volumes:
+        - name: nsm-socket
+          hostPath:
+            path: /var/lib/networkservicemesh
+            type: DirectoryOrCreate
+        - name: kubelet-socket
+          hostPath:
+            path: /var/lib/kubelet
+            type: Directory
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: Directory
+      tolerations:
+        - operator: "Exists"

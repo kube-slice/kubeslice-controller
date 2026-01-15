@@ -1,0 +1,52 @@
+{{- if eq "true" ( include "distro.openshift" . ) }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: worker-operator-scc
+rules:
+  - apiGroups:
+      - security.openshift.io
+    resources:
+      - securitycontextconstraints
+    resourceNames:
+      - privileged
+    verbs:
+      - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: worker-operator-scc
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: worker-operator-scc
+subjects:
+  - kind: ServiceAccount
+    name: kubeslice-netop
+    namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: admission-webhook-sa
+    namespace: kubeslice-nsm-webhook-system
+  - kind: ServiceAccount
+    name: forwarder-kernel
+    namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: nsc-grpc-server
+    namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: nsmgr-acc
+    namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: slice-router
+    namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: vpn-gateway-client
+    namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: vpn-gateway-server
+    namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: kubeslice-gateway-edge
+    namespace: {{ .Release.Namespace }}
+{{- end }}

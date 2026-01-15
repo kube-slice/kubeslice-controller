@@ -20,6 +20,7 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
+	"github.com/kubeslice/kubeslice-controller/ocm"
 	"os"
 	"path/filepath"
 	"sigs.k8s.io/controller-runtime/pkg/certwatcher"
@@ -137,9 +138,20 @@ func initialize(services *service.Services) {
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
-
+	// check ocm is enabled or not
+	var ocmEnabled bool
+	flag.BoolVar(&ocmEnabled, "ocm", false, "Enable OCM integration")
 	flag.Parse()
-
+	if ocmEnabled {
+		go func() {
+			if err := ocm.RunManagerController(); err != nil {
+				setupLog.Error(err, "unable to start OCM manager")
+				os.Exit(1)
+			}
+		}()
+	} else {
+		fmt.Println("OCM integration is disabled")
+	}
 	// initialize logger
 	if logLevel == "" {
 		logLevel = "info"
