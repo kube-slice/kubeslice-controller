@@ -26,7 +26,7 @@ keywords:
 - networking
 - infrastructure
 - application
-kubeVersion: '>= 1.28.0'
+kubeVersion: '>= 1.28.0-0'
 home: https://github.com/kube-slice
 dependencies:
   - name: nsm
