@@ -50,11 +50,11 @@ openvpn:
 wireguard:
   server:
     image: ghcr.io/kube-slice/wireguard-server.alpine
-    tag: v0.1.0-ac
+    tag: v2026.1.15
     pullPolicy: IfNotPresent
   client:
     image: ghcr.io/kube-slice/wireguard-client.alpine
-    tag: v0.1.0-ac
+    tag: v2026.1.15
     pullPolicy: IfNotPresent
 
 dns:
